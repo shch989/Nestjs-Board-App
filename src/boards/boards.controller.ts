@@ -1,3 +1,4 @@
+// https://github.com/typestack/class-validator#manual-validation 파이프 관련 github
 import {
   Body,
   Controller,
@@ -6,10 +7,13 @@ import {
   Param,
   Patch,
   Post,
+  UsePipes,
+  ValidationPipe,
 } from '@nestjs/common';
 import { CreateBoardDto } from 'src/dto/create-board.dto';
 import { Board, BoardStatus } from './board.model';
 import { BoardsService } from './boards.service';
+import { BoardStatusValidationPipe } from './pipes/board-status-validation.pipe';
 
 @Controller('boards')
 export class BoardsController {
@@ -21,6 +25,7 @@ export class BoardsController {
   }
   // C 기능 controller
   @Post()
+  @UsePipes(ValidationPipe) // pipe 유효성 체크
   createBoard(@Body() createBoardDto: CreateBoardDto): Board {
     return this.boardsService.createBoard(createBoardDto);
   }
@@ -39,7 +44,7 @@ export class BoardsController {
   @Patch('/:id/status')
   updateBoardStatus(
     @Param('id') id: string,
-    @Body('status') status: BoardStatus,
+    @Body('status', BoardStatusValidationPipe) status: BoardStatus,
   ) {
     return this.boardsService.updateBoardStatus(id, status);
   }
