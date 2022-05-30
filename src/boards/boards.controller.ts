@@ -5,47 +5,73 @@ import {
   Delete,
   Get,
   Param,
+  ParseIntPipe,
   Patch,
   Post,
   UsePipes,
   ValidationPipe,
 } from '@nestjs/common';
 import { CreateBoardDto } from 'src/dto/create-board.dto';
-import { Board, BoardStatus } from './board.model';
+import { BoardStatus } from './board-status.enum';
+import { Board } from './board.entity';
 import { BoardsService } from './boards.service';
 import { BoardStatusValidationPipe } from './pipes/board-status-validation.pipe';
 
 @Controller('boards')
 export class BoardsController {
   constructor(private boardsService: BoardsService) {}
-  // CRUD 에서의 R
-  @Get('/')
-  getAllBoard(): Board[] {
+  // // CRUD 에서의 R
+  // @Get('/')
+  // getAllBoard(): Board[] {
+  //   return this.boardsService.getAllBoards();
+  // }
+  @Get()
+  getAllTask(): Promise<Board[]> {
     return this.boardsService.getAllBoards();
   }
-  // C 기능 controller
+  // // C 기능 controller
+  // @Post()
+  // @UsePipes(ValidationPipe) // pipe 유효성 체크
+  // createBoard(@Body() createBoardDto: CreateBoardDto): Board {
+  //   return this.boardsService.createBoard(createBoardDto);
+  // }
   @Post()
-  @UsePipes(ValidationPipe) // pipe 유효성 체크
-  createBoard(@Body() createBoardDto: CreateBoardDto): Board {
+  @UsePipes(ValidationPipe)
+  createBoard(@Body() createBoardDto: CreateBoardDto): Promise<Board> {
     return this.boardsService.createBoard(createBoardDto);
   }
-  // 특정 게시물 R controller
+  // // 특정 게시물 R controller
+  // @Get('/:id')
+  // getBoardById(@Param('id') id: string): Board {
+  //   return this.boardsService.getBoardById(id);
+  // }
   @Get('/:id')
-  getBoardById(@Param('id') id: string): Board {
+  getBoardById(@Param('id') id: number): Promise<Board> {
     return this.boardsService.getBoardById(id);
   }
-  // 특정 게시물 D controller
-  // 게시물을 지우는 것이기에 따로 return은 하지 않겠음
+  // // 특정 게시물 D controller
+  // // 게시물을 지우는 것이기에 따로 return은 하지 않겠음
+  // @Delete('/:id')
+  // deleteBoard(@Param('id') id: string): void {
+  //   this.boardsService.deleteBoard(id);
+  // }
   @Delete('/:id')
-  deleteBoard(@Param('id') id: string): void {
-    this.boardsService.deleteBoard(id);
+  deleteBoard(@Param('id', ParseIntPipe) id: number): Promise<void> {
+    return this.boardsService.deleteBoard(id);
   }
-  // U 기능 controller
+  // // U 기능 controller
+  // @Patch('/:id/status')
+  // updateBoardStatus(
+  //   @Param('id') id: string,
+  //   @Body('status', BoardStatusValidationPipe) status: BoardStatus,
+  // ) {
+  //   return this.boardsService.updateBoardStatus(id, status);
+  // }
   @Patch('/:id/status')
   updateBoardStatus(
-    @Param('id') id: string,
+    @Param('id', ParseIntPipe) id: number,
     @Body('status', BoardStatusValidationPipe) status: BoardStatus,
-  ) {
+  ): Promise<Board> {
     return this.boardsService.updateBoardStatus(id, status);
   }
 }
