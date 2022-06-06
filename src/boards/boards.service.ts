@@ -6,6 +6,7 @@ import { CreateBoardDto } from 'src/dto/create-board.dto';
 import { BoardRepository } from './board.repositoty';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Board } from './board.entity';
+import { User } from 'src/auth/user.entity';
 
 @Injectable()
 export class BoardsService {
@@ -27,8 +28,8 @@ export class BoardsService {
   //   this.boards.push(board);
   //   return board;
   // }
-  createBoard(createBoardDto: CreateBoardDto): Promise<Board> {
-    return this.boardRepository.createBoard(createBoardDto)
+  createBoard(createBoardDto: CreateBoardDto, user: User): Promise<Board> {
+    return this.boardRepository.createBoard(createBoardDto, user)
   }
   // // CRUD에서의 특정 게시물 R
   // getBoardById(id: string): Board {
