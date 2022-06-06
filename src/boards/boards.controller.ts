@@ -8,9 +8,11 @@ import {
   ParseIntPipe,
   Patch,
   Post,
+  UseGuards,
   UsePipes,
   ValidationPipe,
 } from '@nestjs/common';
+import { AuthGuard } from '@nestjs/passport';
 import { CreateBoardDto } from 'src/dto/create-board.dto';
 import { BoardStatus } from './board-status.enum';
 import { Board } from './board.entity';
@@ -18,6 +20,7 @@ import { BoardsService } from './boards.service';
 import { BoardStatusValidationPipe } from './pipes/board-status-validation.pipe';
 
 @Controller('boards')
+@UseGuards(AuthGuard('jwt'))
 export class BoardsController {
   constructor(private boardsService: BoardsService) {}
   // // CRUD 에서의 R

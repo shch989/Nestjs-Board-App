@@ -7,19 +7,19 @@ import { UserRepository } from './user.repository';
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
-  this: any;
   constructor(
     @InjectRepository(UserRepository)
     private _userRepository: UserRepository,
   ) {
     super({
-      secreOrKey: 'Secret1234',
+      // 토큰의 유효성 체크
+      secretOrKey: 'Secret1234',
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
     });
   }
   async validate(payload) {
     const { username } = payload;
-    const user: User = await this.this._userRepository.findOne({ username });
+    const user: User = await this._userRepository.findOne({ username });
     if (!user) {
       throw new UnauthorizedException();
     }
