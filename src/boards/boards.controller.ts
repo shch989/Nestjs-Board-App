@@ -25,14 +25,14 @@ import { BoardStatusValidationPipe } from './pipes/board-status-validation.pipe'
 @UseGuards(AuthGuard('jwt'))
 export class BoardsController {
   constructor(private boardsService: BoardsService) {}
-  // // CRUD 에서의 R
+  // // CRUD 에서의 R + 유저가 생성한 게시물만 출력
   // @Get('/')
   // getAllBoard(): Board[] {
   //   return this.boardsService.getAllBoards();
   // }
   @Get()
-  getAllTask(): Promise<Board[]> {
-    return this.boardsService.getAllBoards();
+  getAllTask(@GetUser() user: User): Promise<Board[]> {
+    return this.boardsService.getAllBoards(user);
   }
   // // C 기능 controller
   // @Post()
@@ -57,15 +57,18 @@ export class BoardsController {
   getBoardById(@Param('id') id: number): Promise<Board> {
     return this.boardsService.getBoardById(id);
   }
-  // // 특정 게시물 D controller
+  // // 특정 게시물 D controller + 유저가 자신이 생성한 게시물을 삭제가능
   // // 게시물을 지우는 것이기에 따로 return은 하지 않겠음
   // @Delete('/:id')
   // deleteBoard(@Param('id') id: string): void {
   //   this.boardsService.deleteBoard(id);
   // }
   @Delete('/:id')
-  deleteBoard(@Param('id', ParseIntPipe) id: number): Promise<void> {
-    return this.boardsService.deleteBoard(id);
+  deleteBoardX$d(
+    @Param('id', ParseIntPipe) id: number,
+    @GetUser() user: User,
+  ): Promise<void> {
+    return this.boardsService.deleteBoard(id, user);
   }
   // // U 기능 controller
   // @Patch('/:id/status')

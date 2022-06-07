@@ -54,8 +54,8 @@ export class BoardsService {
   //   // boards에는 filter를 통해 id가 다른 것만 남기겠다.
   //   this.boards = this.boards.filter((board) => board.id !== found.id);
   // }
-  async deleteBoard(id: number): Promise<void> {
-    const result = await this.boardRepository.delete(id);
+  async deleteBoard(id: number, user: User): Promise<void> {
+    const result = await this.boardRepository.delete({id, user});
     if(result.affected === 0) {
       throw new NotFoundException(`${id}라는 이름의 게시물을 찾지 못했습니다`)
     }
@@ -74,7 +74,11 @@ export class BoardsService {
     return board;
   }
   // CRUD 에서 모든 게시물을 가져오는 기능
-  async getAllBoards(): Promise<Board[]> {
-    return this.boardRepository.find();
+  async getAllBoards(user: User): Promise<Board[]> {
+    // 해당 유저가 생성한 게시물만 출력
+    const query = this.boardRepository.createQueryBuilder('board');
+    query.where('board.userId = :userId', { userId: user.id });
+    const boards = await query.getMany();
+    return boards;
   }
 }
