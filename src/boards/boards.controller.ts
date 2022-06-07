@@ -4,6 +4,7 @@ import {
   Controller,
   Delete,
   Get,
+  Logger,
   Param,
   ParseIntPipe,
   Patch,
@@ -24,6 +25,7 @@ import { BoardStatusValidationPipe } from './pipes/board-status-validation.pipe'
 @Controller('boards')
 @UseGuards(AuthGuard('jwt'))
 export class BoardsController {
+  private logger = new Logger('Nestjs-Board');
   constructor(private boardsService: BoardsService) {}
   // // CRUD 에서의 R + 유저가 생성한 게시물만 출력
   // @Get('/')
@@ -32,6 +34,8 @@ export class BoardsController {
   // }
   @Get()
   getAllTask(@GetUser() user: User): Promise<Board[]> {
+    // log 생성
+    this.logger.verbose(`User ${user.username} trying to get all boards`);
     return this.boardsService.getAllBoards(user);
   }
   // // C 기능 controller
@@ -46,6 +50,12 @@ export class BoardsController {
     @Body() createBoardDto: CreateBoardDto,
     @GetUser() user: User,
   ): Promise<Board> {
+    // log 생성
+    this.logger.verbose(
+      `User ${user.username} creating a new board. Payload: ${JSON.stringify(
+        createBoardDto,
+      )}`,
+    );
     return this.boardsService.createBoard(createBoardDto, user);
   }
   // // 특정 게시물 R controller
